@@ -58,6 +58,30 @@ signature = (A 的稳定来源 ID, sort({R1, R2, R3}) 的稳定来源 ID)
 - 不复制 Logo、品牌、原图人物 / 物体 / 照片或完整布局。
 - 每个保留图片都可登记一条专属的 blended-reference prompt，供后续运营平台把图片和文字参考一起上传。
 
+### 可插拔生图模型
+
+生成前的 A/U/C/M 抽取、组合、审核与文件契约不依赖任何一家模型；只有最后“把已编译的 prompt 渲染成图片”这一步可以换模型。仓库提供统一的本机路由配置，不保存 API Key：
+
+```bash
+# 查看可选路由
+python3 scripts/configure_image_provider.py list
+
+# 让当前 Agent 使用它自身已配置的生图工具
+python3 scripts/configure_image_provider.py use agent-native
+
+# 配置外部服务；模型 ID 由使用者填写，避免仓库把会变动的型号写死
+python3 scripts/configure_image_provider.py use openai-images-api --model <model-id>
+python3 scripts/configure_image_provider.py use google-genai-api --model <model-id>
+python3 scripts/configure_image_provider.py use stability-api --model <model-id>
+python3 scripts/configure_image_provider.py use replicate-api --model <model-id>
+python3 scripts/configure_image_provider.py use fal-api --model <model-id>
+python3 scripts/configure_image_provider.py use comfyui-http --model <workflow-or-model-id>
+```
+
+首次真正需要生图、且尚未有配置时，Agent 必须先问用户是否有偏好的生图模型。用户可以选当前 Agent 的原生模型，或提供外部 API 地址、API Key 和模型名。选择一旦确认，Agent 就登记路由，并在本轮所有 Web/Mobile 输出以及后续未改配置的运行中自动使用同一模型；不得每张图重新问，也不得暗中换模型。API Key 优先保存到当前 Agent 的安全凭据能力；没有该能力时，用户可在自己的终端运行 `bootstrap` 命令，以无回显方式写入权限为 600 的本机私密文件。
+
+路由与模型名保存在 Git 忽略的 `user-config/image-generation-provider.json`。不同 Agent 都读取同一份记录，再按自己的原生工具、已授权 HTTP/API 能力或本地 ComfyUI 能力执行；若当前 Agent 没有相应工具或凭据，必须说明并保留 prompt/artifact，不能假装已生成或暗中换模型。完整字段和边界见 [providers/README.md](providers/README.md)。
+
 ## 文件说明
 
 | 文件 | 用途 |
@@ -133,6 +157,23 @@ The workflow contract is platform-neutral: it specifies files, decisions, constr
 | Other agents | [AGENTS.md](AGENTS.md) | Give the agent this file and the referenced templates; no provider-specific API is required. |
 
 The adapters must not alter the A/U/C/M selection mathematics, direct-reference boundary, locked output-template rules, review contract, or local-only path handling. They only tell a platform where to begin reading.
+
+## Pluggable image-model routing
+
+The A/U/C/M extraction, mixing, review, and artifact contract are model-independent. Only the final rendering step is routed. Configure a local, Git-ignored provider record with one command:
+
+```bash
+python3 scripts/configure_image_provider.py list
+python3 scripts/configure_image_provider.py use agent-native
+python3 scripts/configure_image_provider.py use openai-images-api --model <model-id>
+python3 scripts/configure_image_provider.py use comfyui-http --model <workflow-or-model-id>
+```
+
+On the first request that actually needs an image, an agent with no routing record must ask once whether the user prefers its native renderer or an external provider. For an external provider, collect API endpoint, model ID, and API key through the host's secure secret mechanism. The chosen route is then persisted and automatically used for every render in the current batch and future runs until the user changes it. No per-image reconfirmation and no silent model swap are allowed.
+
+Supported routes include the current agent's native image tool, OpenAI-style image APIs, Google GenAI APIs, Stability APIs, Replicate, fal, local ComfyUI HTTP, and a custom HTTP adapter. The routing record never contains an API key; it only identifies the secret variable or host secret reference. Every supported agent reads the same record, then uses its own available tool or authorized client to render the already compiled prompt. Users without a host secret store may run the interactive `bootstrap` command, which accepts the key without echo and stores it only in a local mode-600 secret file.
+
+Provider routing may change the renderer, not the workflow: do not use it to skip reference-spec extraction, pass raw references by default, relax a locked layout, replace a required review artifact, or silently fall back to a different model. Read [providers/README.md](providers/README.md) for the configuration schema and handoff rules.
 
 ### Project boundaries
 

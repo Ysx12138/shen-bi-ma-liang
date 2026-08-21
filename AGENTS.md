@@ -22,6 +22,18 @@ Generate original, non-runnable Web or mobile UI atmosphere images from a struct
 6. Keep references as evidence. Do not copy brands, logos, source copy, people, objects, photos, or distinctive full layouts.
 7. Produce auditable per-run files: source/spec notes, compiled mix spec, output spec, prompts, outputs, and review record. Only prepare the upload handoff; never upload or enable an external record without explicit user authorization.
 
+## Image-model routing
+
+Keep the workflow independent from the final image renderer. Before the first request that actually requires image rendering, read `user-config/image-generation-provider.json` and [providers/README.md](providers/README.md).
+
+1. If a valid routing record exists, announce its provider and model once, then use it for every render in the current batch and later runs until the user explicitly changes it.
+2. If no record exists, ask once: “Do you have a preferred image model? You can use this agent’s native image tool, or provide an API endpoint/provider, API key through a secure field, and model ID.” Do not begin final rendering before the user answers. If the user has no preference, record `agent-native` and use the host agent's selected image tool.
+3. Save provider route, endpoint, model ID, and a secret reference in `user-config/image-generation-provider.json`. Save the API key only through the host agent's secret store when one is available. If the host has no secret store, instruct the user to run `python3 scripts/configure_image_provider.py bootstrap ...` locally; this accepts the key without echo and writes it only to the mode-600, Git-ignored `user-config/image-generation-provider.env` file. Never request that a key be pasted into a public artifact, prompt log, Git command, or repository file.
+4. Use the selected provider only after the prompt has been compiled from the approved A/U/C/M spec. Record `rendering-provider` and `rendering-model` in `output-spec.md` and `prompts.md` for the run, but never record the endpoint credential or API key.
+5. Preserve the exact locked canvas, layout, reference boundary, and review artifacts for every rendering. If the host agent lacks the selected provider's tool, authorized API client, local endpoint, or secret, stop at the prompt/artifact handoff and say what is unavailable. Do not silently substitute a different model.
+
+Users may update or clear the route with `python3 scripts/configure_image_provider.py`. The command changes only Git-ignored local configuration.
+
 ## Local defaults
 
 When a user explicitly supplies a materials root and asks to keep it for later runs, follow the `Default materials root` section in `SKILL.md`. Store paths only in `user-config/default-materials-root.md`; never commit that file or expose its absolute paths by default.

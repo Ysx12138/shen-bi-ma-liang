@@ -19,3 +19,5 @@ jobs:
           python-version: "3.11"
       - name: Validate repository contract
         run: python3 scripts/validate_skill.py
+      - name: Check provider configuration CLI
+        run: python3 scripts/configure_image_provider.py list
