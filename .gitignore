@@ -1,0 +1,13 @@
+# Local run artifacts
+inspiration-runs/
+upload-materials/
+output/
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Local editor and system files
+.DS_Store
+.idea/
+.vscode/

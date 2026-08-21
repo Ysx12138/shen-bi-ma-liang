@@ -1,0 +1,4 @@
+interface:
+  display_name: "神笔马良"
+  short_description: "组合生成、编号筛选并分类多种 Web/移动端 UI 氛围版式"
+  default_prompt: "Use $style-inspiration-cards to generate a controlled Web/mobile inspiration batch with a locked, non-repeating mobile layout set when requested, number the six images, and classify my selected numbers into upload folders."
