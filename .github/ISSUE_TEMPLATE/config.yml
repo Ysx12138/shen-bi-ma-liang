@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Usage questions and discussion
+    url: https://github.com/Ysx12138/shen-bi-ma-liang/discussions
+    about: Use Discussions for ideas, examples, and non-reproducible workflow questions.
+  - name: Security report
+    url: https://github.com/Ysx12138/shen-bi-ma-liang/security/advisories/new
+    about: Do not disclose suspected security issues in public Issues.
