@@ -24,11 +24,15 @@ Generate original, non-runnable Web or mobile UI atmosphere images from a struct
 
 ## Image-model routing
 
-Keep the workflow independent from the final image renderer. Before the rendering stage, read `user-config/image-generation-provider.json` when it exists and follow [providers/README.md](providers/README.md). That local record selects either the host agent's native image tool or an external/local provider route; it contains provider metadata and environment-variable names only, never a credential.
+Keep the workflow independent from the final image renderer. Before the first request that actually requires image rendering, read `user-config/image-generation-provider.json` and [providers/README.md](providers/README.md).
 
-Use the selected provider only after the prompt has been compiled from the approved A/U/C/M spec. Preserve the exact locked canvas, layout, reference boundary, and review artifacts. If the host agent lacks the selected provider's tool, authorized API client, local endpoint, or required environment variable, stop at the prompt/artifact handoff and say what is unavailable. Do not silently substitute a different model.
+1. If a valid routing record exists, announce its provider and model once, then use it for every render in the current batch and later runs until the user explicitly changes it.
+2. If no record exists, ask once: “Do you have a preferred image model? You can use this agent’s native image tool, or provide an API endpoint/provider, API key through a secure field, and model ID.” Do not begin final rendering before the user answers. If the user has no preference, record `agent-native` and use the host agent's selected image tool.
+3. Save provider route, endpoint, model ID, and a secret reference in `user-config/image-generation-provider.json`. Save the API key only through the host agent's secret store when one is available. If the host has no secret store, instruct the user to run `python3 scripts/configure_image_provider.py bootstrap ...` locally; this accepts the key without echo and writes it only to the mode-600, Git-ignored `user-config/image-generation-provider.env` file. Never request that a key be pasted into a public artifact, prompt log, Git command, or repository file.
+4. Use the selected provider only after the prompt has been compiled from the approved A/U/C/M spec. Record `rendering-provider` and `rendering-model` in `output-spec.md` and `prompts.md` for the run, but never record the endpoint credential or API key.
+5. Preserve the exact locked canvas, layout, reference boundary, and review artifacts for every rendering. If the host agent lacks the selected provider's tool, authorized API client, local endpoint, or secret, stop at the prompt/artifact handoff and say what is unavailable. Do not silently substitute a different model.
 
-Configure the local route with `python3 scripts/configure_image_provider.py`. The configuration command changes only `user-config/image-generation-provider.json`, which is Git-ignored and must stay local.
+Users may update or clear the route with `python3 scripts/configure_image_provider.py`. The command changes only Git-ignored local configuration.
 
 ## Local defaults
 
