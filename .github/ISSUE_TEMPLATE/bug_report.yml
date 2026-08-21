@@ -1,0 +1,32 @@
+name: Bug report
+description: Report a reproducible problem in the Skill or its repository validation.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not include private images, tokens, or local absolute paths."
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the observable result and why it differs from the documented rule.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Use a non-sensitive brief, selected template, and relevant rule section.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: input
+    id: codex_version
+    attributes:
+      label: Codex version (if known)

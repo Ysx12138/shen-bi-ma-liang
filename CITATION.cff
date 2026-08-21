@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use Shen Bi Ma Liang in research or public work, please cite this repository."
+title: "Shen Bi Ma Liang"
+type: software
+authors:
+  - alias: Ysx12138
+repository-code: "https://github.com/Ysx12138/shen-bi-ma-liang"
+license: MIT
+date-released: 2026-08-21
