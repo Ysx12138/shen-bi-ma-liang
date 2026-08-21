@@ -2,6 +2,7 @@
 inspiration-runs/
 upload-materials/
 output/
+user-config/
 *.png
 *.jpg
 *.jpeg

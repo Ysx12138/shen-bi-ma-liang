@@ -1,6 +1,6 @@
 ---
 name: style-inspiration-cards
-description: Generate, number, review, and classify original Web and mobile UI atmosphere images from design.md plus visual references. Analyze and preserve each reference's content-integration logic—how a person, object, material, or scene relates to typography, hierarchy, crop, and layout—without forcing an isolated visual anchor. Use for a single palette-led image, a controlled six-image combination batch with balanced UI/color/mood reference roles, selectable mobile layouts (device mockups or pure-page compositions), or a follow-up selection such as `134` or `234保留` that should copy chosen images into separate Web and mobile upload-material folders.
+description: Generate, number, review, and classify original Web and mobile UI atmosphere images from design.md plus visual references. Analyze and preserve each reference's content-integration logic—how a person, object, material, or scene relates to typography, hierarchy, crop, and layout—without forcing an isolated visual anchor. Use for a single palette-led image, a controlled six-image combination batch with balanced UI/color/mood reference roles, selectable mobile layouts (device mockups or pure-page compositions), registering a user-supplied materials folder and design.md as the local default for later runs, or a follow-up selection such as `134` or `234保留` that should copy chosen images into separate Web and mobile upload-material folders.
 ---
 
 # Style Inspiration Cards
@@ -38,6 +38,25 @@ Select and record a mobile layout before analyzing references. References may su
 - `mobile-pure-panels`: two to four screen panels with no phone hardware; use when the requested reference is a pure-page or UI-board presentation.
 
 When only one mobile output is requested and the user does not specify a layout, use `mobile-triptych-equal` for compatibility. When multiple mobile outputs are requested, randomly choose approved layouts without repetition within the current batch, record the chosen layout and `presentation-fidelity` per output/Mix, and do not invent a new arrangement. In the controlled six-image batch, assign three different approved mobile layouts to Mix 01–03 by default; the user may explicitly lock one layout across all three if they want a like-for-like role comparison. A layout may be selected from the approved template set even when the reference image itself uses another layout.
+
+## Default materials root
+
+When the user explicitly asks to make an organized local materials folder the default starting location for later runs, register it before collecting generation inputs. Never infer or overwrite this setting from the current working directory.
+
+1. Resolve and verify the user-provided absolute `materials_root`, its `design_path` (one `design.md` or a directory of eligible design markdown files), and optional `references_path`. Require every declared path to exist; keep the previous setting unchanged if validation fails.
+2. Create or replace the local-only record `user-config/default-materials-root.md` beside this `SKILL.md`. Store only normalized absolute paths and an optional `runs_path`; do not copy images, specs, prompts, tokens, or personal metadata. Use this format:
+
+   ```text
+   materials_root: /absolute/materials/root
+   design_path: /absolute/materials/root/design-md-library
+   references_path: /absolute/materials/root/reference-images
+   runs_path: /absolute/materials/root/inspiration-runs
+   ```
+
+   `references_path` defaults to `materials_root`; `runs_path` defaults to `<materials_root>/inspiration-runs`.
+3. At the start of every later run, read this record first. When the user omits an input location, use the recorded design and reference paths, create run artifacts under the recorded `runs_path`, and state which default root is being used. The recorded root only supplies candidates; it never selects a reference role, bypasses eligibility checks, or permits direct image conditioning.
+4. Let an explicit path in the current request override the matching default for that run only. Change the persisted default only when the user explicitly says to update, replace, or clear it. On `clear`, remove only `user-config/default-materials-root.md` and return to asking for missing paths.
+5. Treat `user-config/` as user-local state. Do not commit it, include it in a repository, or expose its absolute paths in generated artifacts unless the user explicitly requests them.
 
 ## Inputs
 
@@ -106,7 +125,7 @@ Apply these during reference analysis and prompt writing. They are generation co
 
 ### 1. Start a generation run
 
-Create `inspiration-runs/<slug>/`. In controlled combination batch mode, use `inspiration-runs/combination-history.md` as the cross-batch combination log; append only `A`'s stable source ID, the stable-ID-sorted U/C/M source set, permutation group, and run slug. After locking `A`, copy the selected `design.md` into `selected-design.md` as a read-only snapshot; do not mutate the source spec.
+Resolve the default materials root first when it exists. Create `<runs_path>/<slug>/` when the recorded root supplies `runs_path`; otherwise create `inspiration-runs/<slug>/` in the user-selected active workspace. In controlled combination batch mode, use the matching `combination-history.md` beside that run root as the cross-batch combination log; append only `A`'s stable source ID, the stable-ID-sorted U/C/M source set, permutation group, and run slug. After locking `A`, copy the selected `design.md` into `selected-design.md` as a read-only snapshot; do not mutate the source spec.
 
 In standard mode, create `reference-notes.md` and `reference-specs.md`. Mark the selected color reference, then extract its `C-spec` (palette, color relationships, material feeling, and exclusions); extract only permitted U/C/M attributes from every other reference. For every spec, record its source, observable prompt-ready attributes, intended contribution, exclusions, and content-integration logic: real-world-content presence or absence; type and subject when present; relationship to type, crop, layering, UI role, and visual weight. Classify contributions internally; do not require the user to classify images manually.
 
@@ -208,6 +227,9 @@ After a controlled combination batch passes review:
 ## Output contract
 
 ```text
+user-config/
+  default-materials-root.md   # user-local default source/run paths; never commit
+
 inspiration-runs/
   combination-history.md          # A + U/C/M combination history for controlled combination batches
   <slug>/

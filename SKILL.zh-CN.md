@@ -35,6 +35,25 @@ A spec + 被选中的 U spec + C spec + M spec -> 编译后的 Mix spec
 
 只要求一张移动端图且用户未指定时，默认使用 `mobile-triptych-equal`，保持旧结果兼容。需要多张移动端图时，在批准模板中随机选择且本轮不重复，并按输出/Mix 记录；不得临时发明排列。受控六图批量默认给 Mix 01–03 分配三个不同的批准版式；若用户想做同版式对照，可以明确锁定一个版式。参考图自身使用什么排列，不会自动覆盖锁定模板。
 
+## 默认素材根目录
+
+当用户明确要求把已整理的本机素材文件夹设为以后启动时的默认位置，先登记它，再补齐生成输入。不得从当前工作目录自行推断或覆盖该设置。
+
+1. 解析并校验用户给出的绝对 `materials_root`、`design_path`（一份 `design.md`，或一个存放合格 design markdown 的目录）以及可选的 `references_path`。所有已声明路径都必须存在；校验失败时保留原设置不变。
+2. 在本 `SKILL.md` 同级创建或替换仅本机使用的 `user-config/default-materials-root.md`。其中只能记录规范化后的绝对路径和可选 `runs_path`；不得复制图片、spec、提示词、令牌或个人元数据。格式如下：
+
+   ```text
+   materials_root: /absolute/materials/root
+   design_path: /absolute/materials/root/design-md-library
+   references_path: /absolute/materials/root/reference-images
+   runs_path: /absolute/materials/root/inspiration-runs
+   ```
+
+   未提供时，`references_path` 默认等于 `materials_root`，`runs_path` 默认等于 `<materials_root>/inspiration-runs`。
+3. 以后每次启动任务时，先读取这份记录。用户省略素材位置时，使用已登记的设计与参考路径，并将本轮产物建立在已登记的 `runs_path` 下；同时告知用户正在使用哪个默认根目录。这个根目录只提供候选素材，不能替用户指定参考图角色、跳过合格性校验，也不能允许直接传入原图。
+4. 本轮请求中明确给出的路径，只覆盖本轮对应默认值。只有用户明确说“更新”“替换”或“清除”默认路径时，才修改持久记录；“清除”只删除 `user-config/default-materials-root.md`，随后恢复为对缺失路径提问。
+5. `user-config/` 属于用户本机状态。不得提交到仓库，不得随 Skill 发布，也不得在生成产物中暴露绝对路径，除非用户明确要求。
+
 ## 输入
 
 只补齐缺失信息：
@@ -101,7 +120,7 @@ A spec + 被选中的 U spec + C spec + M spec -> 编译后的 Mix spec
 
 ### 1. 建立生成任务
 
-创建 `inspiration-runs/<slug>/`。受控组合批量模式使用 `inspiration-runs/combination-history.md` 作为跨批次组合记录；只追加 `A` 的稳定来源 ID、按稳定 ID 排序的 U/C/M 来源集合、排列组和本轮 slug。锁定 `A` 后，将选择的 `design.md` 复制为 `selected-design.md` 作为只读快照，不得修改原规范。
+若存在默认素材根目录，先解析它。已登记 `runs_path` 时，在 `<runs_path>/<slug>/` 建立本轮；否则在用户本轮选择的工作区中建立 `inspiration-runs/<slug>/`。受控组合批量模式使用与该运行根目录相邻的 `combination-history.md` 作为跨批次组合记录；只追加 `A` 的稳定来源 ID、按稳定 ID 排序的 U/C/M 来源集合、排列组和本轮 slug。锁定 `A` 后，将选择的 `design.md` 复制为 `selected-design.md` 作为只读快照，不得修改原规范。
 
 标准模式创建 `reference-notes.md` 与 `reference-specs.md`：标记色彩主控图，并抽取其 `C-spec`（配色、颜色关系、材质感和排除项）；其他参考只抽取允许的 U/C/M 属性。每个 spec 都记录来源、可观察且可直接写入提示词的属性、允许贡献和排除项。每张输出都必须记录一个实体锚点：类型（人物/物体/材质/产品/环境）、具体主体、相关环境或动作、光线、镜头/裁切、UI 作用、视觉权重与禁止替代方式。
 
@@ -201,6 +220,9 @@ Web 图只要出现多于一个页面，或缺少来自 `C-spec` 的背景承托
 ## 输出目录约定
 
 ```text
+user-config/
+  default-materials-root.md   # 用户本机默认素材/运行路径；不得提交
+
 inspiration-runs/
   combination-history.md          # 受控组合批量模式的 A + U/C/M 组合记录
   <slug>/
