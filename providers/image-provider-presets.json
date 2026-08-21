@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "presets": {
+    "agent-native": {
+      "display_name": "Agent-native image tool",
+      "execution": "agent-native",
+      "requires_model": false,
+      "notes": "Use the image-generation capability already configured for the current agent."
+    },
+    "openai-images-api": {
+      "display_name": "OpenAI-style Images API",
+      "execution": "openai-images-api",
+      "requires_model": true,
+      "api_key_env": "OPENAI_API_KEY",
+      "base_url_env": "OPENAI_BASE_URL",
+      "notes": "Supply the current provider-supported image model ID at configuration time."
+    },
+    "google-genai-api": {
+      "display_name": "Google GenAI API",
+      "execution": "google-genai-api",
+      "requires_model": true,
+      "api_key_env": "GEMINI_API_KEY",
+      "notes": "Supply the current provider-supported image model ID at configuration time."
+    },
+    "stability-api": {
+      "display_name": "Stability API",
+      "execution": "stability-api",
+      "requires_model": true,
+      "api_key_env": "STABILITY_API_KEY",
+      "notes": "Supply the current provider-supported image model ID at configuration time."
+    },
+    "replicate-api": {
+      "display_name": "Replicate API",
+      "execution": "replicate-api",
+      "requires_model": true,
+      "api_key_env": "REPLICATE_API_TOKEN",
+      "notes": "Use a current model or version identifier supplied by the user."
+    },
+    "fal-api": {
+      "display_name": "fal API",
+      "execution": "fal-api",
+      "requires_model": true,
+      "api_key_env": "FAL_KEY",
+      "notes": "Use a current model endpoint or identifier supplied by the user."
+    },
+    "comfyui-http": {
+      "display_name": "Local ComfyUI HTTP",
+      "execution": "comfyui-http",
+      "requires_model": true,
+      "base_url_env": "COMFYUI_BASE_URL",
+      "notes": "Use a user-approved local workflow or model identifier; never assume a local server exists."
+    },
+    "custom-http": {
+      "display_name": "Custom HTTP image endpoint",
+      "execution": "custom-http",
+      "requires_model": true,
+      "api_key_env": "IMAGE_PROVIDER_API_KEY",
+      "base_url_env": "IMAGE_PROVIDER_BASE_URL",
+      "notes": "Use only with an endpoint and authentication method the user has explicitly authorized."
+    }
+  }
+}

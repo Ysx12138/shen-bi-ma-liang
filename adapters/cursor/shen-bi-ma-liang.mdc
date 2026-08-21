@@ -3,6 +3,6 @@ description: Apply the Shen Bi Ma Liang UI atmosphere-image workflow when a task
 alwaysApply: false
 ---
 
-For original Web/mobile UI atmosphere-image requests, reference mixing, A/U/C/M role composition, numbered review, or persistent materials roots, read the repository-root `AGENTS.md` and then `SKILL.md` before acting.
+For original Web/mobile UI atmosphere-image requests, reference mixing, A/U/C/M role composition, numbered review, persistent materials roots, or external image-model selection, read the repository-root `AGENTS.md` and then `SKILL.md` before acting.
 
-This rule is a discovery bridge only. Preserve the full workflow: compile reference specs before generation, use the balanced controlled-batch selection group, lock output templates, preserve audit artifacts, and never upload or publish without explicit authorization.
+This rule is a discovery bridge only. Preserve the full workflow: compile reference specs before generation, use the balanced controlled-batch selection group, lock output templates, honor the local image-provider route if configured, preserve audit artifacts, and never upload or publish without explicit authorization.

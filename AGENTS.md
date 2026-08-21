@@ -22,6 +22,14 @@ Generate original, non-runnable Web or mobile UI atmosphere images from a struct
 6. Keep references as evidence. Do not copy brands, logos, source copy, people, objects, photos, or distinctive full layouts.
 7. Produce auditable per-run files: source/spec notes, compiled mix spec, output spec, prompts, outputs, and review record. Only prepare the upload handoff; never upload or enable an external record without explicit user authorization.
 
+## Image-model routing
+
+Keep the workflow independent from the final image renderer. Before the rendering stage, read `user-config/image-generation-provider.json` when it exists and follow [providers/README.md](providers/README.md). That local record selects either the host agent's native image tool or an external/local provider route; it contains provider metadata and environment-variable names only, never a credential.
+
+Use the selected provider only after the prompt has been compiled from the approved A/U/C/M spec. Preserve the exact locked canvas, layout, reference boundary, and review artifacts. If the host agent lacks the selected provider's tool, authorized API client, local endpoint, or required environment variable, stop at the prompt/artifact handoff and say what is unavailable. Do not silently substitute a different model.
+
+Configure the local route with `python3 scripts/configure_image_provider.py`. The configuration command changes only `user-config/image-generation-provider.json`, which is Git-ignored and must stay local.
+
 ## Local defaults
 
 When a user explicitly supplies a materials root and asks to keep it for later runs, follow the `Default materials root` section in `SKILL.md`. Store paths only in `user-config/default-materials-root.md`; never commit that file or expose its absolute paths by default.

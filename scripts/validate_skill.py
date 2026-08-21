@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import json
 from pathlib import Path
 
 
@@ -15,6 +16,8 @@ REQUIRED_FILES = (
     "assets/design-template.md",
     "references/final-output-templates.md",
     "references/final-output-templates.zh-CN.md",
+    "providers/image-provider-presets.json",
+    "scripts/configure_image_provider.py",
 )
 
 
@@ -51,6 +54,22 @@ def validate_relative_markdown_links(root: Path) -> None:
                 fail(f"broken relative link in {markdown_file.relative_to(root)}: {target}")
 
 
+def validate_provider_presets(root: Path) -> None:
+    catalog_path = root / "providers" / "image-provider-presets.json"
+    catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+    if catalog.get("schema_version") != 1:
+        fail("provider preset catalog must declare schema_version 1")
+    presets = catalog.get("presets")
+    if not isinstance(presets, dict) or not presets:
+        fail("provider preset catalog must contain at least one preset")
+    for provider_id, preset in presets.items():
+        if not isinstance(preset, dict):
+            fail(f"provider preset {provider_id} must be an object")
+        for key in ("display_name", "execution", "requires_model", "notes"):
+            if key not in preset:
+                fail(f"provider preset {provider_id} is missing {key}")
+
+
 def main() -> None:
     root = Path(__file__).resolve().parent.parent
     for relative_path in REQUIRED_FILES:
@@ -64,6 +83,7 @@ def main() -> None:
         if not (root / relative_path).is_file():
             fail(f"missing required agent adapter: {relative_path}")
     validate_frontmatter(root / "SKILL.md")
+    validate_provider_presets(root)
     validate_relative_markdown_links(root)
     print("Skill repository validation passed.")
 
